@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -12,6 +12,22 @@ class IndexView(View):
         return render(request, 'articles/index.html', context={
             'articles': articles,
         })
+
+
+class ArticleView(View):
+
+    def get(self, request, *args, **kwargs):
+        article = get_object_or_404(Article, id=kwargs['id'])
+        return render(request, 'articles/show.html', context={
+            'article': article,
+        })
+
+
+class HomeRedirectView(View):
+    def get(self, request, *args, **kwargs):
+        # Используем reverse для получения URL по имени маршрута
+        target_url = reverse('article', kwargs={'tags': 'python', 'article_id': 42})
+        return redirect(target_url)
 
 
 # class IndexView(View):
@@ -30,10 +46,3 @@ class IndexView(View):
 #         }
 #         # Используем шаблон templates/articles/index.html
 #         return render(request, 'articles/index.html', context)
-
-
-class HomeRedirectView(View):
-    def get(self, request, *args, **kwargs):
-        # Используем reverse для получения URL по имени маршрута
-        target_url = reverse('article', kwargs={'tags': 'python', 'article_id': 42})
-        return redirect(target_url)
